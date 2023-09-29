@@ -3,7 +3,9 @@ App donde se medira tu habilidad/velocidad para escribir una frase completamente
 """
 
 # Importo los modulos necesarios
+from logging import root
 import random
+import time
 import tkinter as tk
 from tkinter import scrolledtext
 from tkinter import ttk
@@ -23,14 +25,17 @@ class PruebaVelocidad(tk.Tk):
         """
         # Boton para generar frase aleatoria
         self.boton_frase_aleatoria = ttk.Button(self, text="GENERAR FRASE ALEATORIA", command=self.generar_frase)
-        self.boton_frase_aleatoria.pack(side="top", pady=10)
+        self.boton_frase_aleatoria.pack(side="top", pady=20)
         # Área de entrada de texto para que el usuario escriba la frase
         self.input_text = scrolledtext.ScrolledText(self, wrap=tk.WORD, height=5, width=50, font=("Arial", 15))
         self.input_text.pack(padx=20)
 
+        # Boton para iniciar la prueba de velocidad
+        self.boton_frase_aleatoria = ttk.Button(self, text="INICIAR PRUEBA DE VELOCIDAD", command=self.iniciar_prueba)
+        self.boton_frase_aleatoria.pack(pady=20) 
         # Area donde aparecera la frase alearotoria
         self.text_box = scrolledtext.ScrolledText(self, wrap=tk.WORD, height=5, width=50, font=("Arial", 15))
-        self.text_box.pack(padx=20, pady=20)
+        self.text_box.pack(padx=20, side="bottom")
         self.text_box.config(state="disabled")  # Deshabilitar la edición del cuadro de texto
 
     def generar_frase(self):
@@ -54,6 +59,35 @@ class PruebaVelocidad(tk.Tk):
         self.text_box.delete(1.0, tk.END)
         self.text_box.insert(tk.END, frases[num_rd])
         self.text_box.config(state="disabled")
+    
+    def iniciar_prueba(self):
+        """
+        Funcion para comenzar la prueba de escritura donde cronometrara el tiempo que se tarda en escribir
+        la frase generada tal cual esta escrita
+        """
+        # Obtengo la frase aleatoria
+        texto_aleatorio = self.text_box.get("1.0", tk.END)
+
+        # Compruebo que haya frase aleatoria
+        if len(texto_aleatorio) == 1:
+            messagebox.showerror("Error", "Primero debe de generar una frase aleatoria")
+        else:
+            # Primero compruebo que no haya nada escrito al comenzar la prueba
+            texto_comprobar = self.input_text.get("1.0", tk.END)
+            if len(texto_comprobar) != 1:
+                messagebox.showerror("Error", "La prueba debe de comenzar con la caja de texto vacia")
+            else:
+                messagebox.showinfo("Información", "Para finalizar la prueba de escritura pulse INTRO." 
+                                    "Si la frase esta escrita correctamente saldra el tiempo que ha tardado " 
+                                    "en escribirla, sino le mostrara un mensaje de error diciendo que la frase "
+                                    "no esta escrita correctamente.\n\nLA PRUEBA COMIENZA CUANDO PULSE ACEPTAR Y "
+                                    "TERMINARA CUNADO APAREZCA EL TIEMPO")
+                self.input_text.focus_force()
+                self.tiempo_inicio = time.time()
+                self.bind('<Return>', self.comprobar_texto)
+    
+    def comprobar_texto(self):
+        print("Has pulsado enter")
 
 if __name__ == "__main__":
     app = PruebaVelocidad()
