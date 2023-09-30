@@ -3,7 +3,6 @@ App donde se medira tu habilidad/velocidad para escribir una frase completamente
 """
 
 # Importo los modulos necesarios
-from logging import root
 import random
 import time
 import tkinter as tk
